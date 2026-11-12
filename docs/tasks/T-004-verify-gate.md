@@ -1,7 +1,7 @@
 # T-004 검증 게이트 `pnpm check` 구성
 
 - 마일스톤: M0 하네스·개발 환경
-- 상태: ready
+- 상태: done
 - 검수: 승인 (2026-11-12)
 - 의존: T-003
 - 담당: 구현자
@@ -62,3 +62,10 @@
 - `eslint-plugin-react-hooks` 같은 React 전용 린트 규칙은 넣지 않았다. 넣으려면 라이브러리 승인이 필요하다.
 - `pnpm typecheck`는 `src/`만 검사한다. `vite.config.ts`와 `vitest.setup.ts`(`tsconfig.node.json`)는 `tsc -b`를 써야 검사되는데, T-003의 구성을 그대로 뒀다.
 - Windows에서는 실행해 보지 않았다. T-005의 CI에서 확인된다.
+
+### 2026-11-12 오케스트레이터 검증
+
+- diff를 읽고 `pnpm check`를 직접 실행: 타입 검사, ESLint, Prettier, Vitest(3개), cargo fmt·clippy·test(1개) 모두 통과.
+- 타입 오류가 있는 파일을 넣으면 `pnpm check`가 실패하는 것을 확인하고 되돌림. clippy 경고 쪽은 구현자 보고로만 확인.
+- 도구 실행에 필요해 추가된 개발용 패키지(`eslint`, `prettier`, `@eslint/js`, `typescript-eslint`, `jsdom`)를 `docs/decisions/0006-libraries.md`에 기록.
+- 넘긴 것: React 훅 린트 규칙(`eslint-plugin-react-hooks`) 추가 여부, `vite.config.ts`의 타입 검사, Windows 실행 확인(T-005).
