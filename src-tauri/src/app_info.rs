@@ -23,3 +23,27 @@ impl AppInfo {
 pub fn get_app_info(app: AppHandle) -> AppInfo {
     AppInfo::from_package_info(app.package_info())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_package_info_copies_name_and_version() {
+        let package_info = PackageInfo {
+            name: "tokyonight".into(),
+            version: "1.2.3".parse().expect("valid semver"),
+            authors: "",
+            description: "",
+            crate_name: "tokyonight",
+        };
+
+        assert_eq!(
+            AppInfo::from_package_info(&package_info),
+            AppInfo {
+                name: "tokyonight".into(),
+                version: "1.2.3".into(),
+            }
+        );
+    }
+}

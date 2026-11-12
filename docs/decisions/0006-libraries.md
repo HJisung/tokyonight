@@ -14,6 +14,7 @@
 | @tanstack/react-virtual | 파일 목록 가상화 | T-023 |
 | dnd-kit | 탭 순서 변경 | T-041 |
 | Vitest, Testing Library | 단위·컴포넌트 테스트 | T-004 |
+| ESLint(`@eslint/js`, `typescript-eslint`), Prettier, jsdom | 린트, 형식 검사, 테스트용 DOM (개발용) | T-004 |
 | Tauri 플러그인 `dialog`, `fs` | 폴더·파일 선택, 파일 접근 | T-020 |
 | Rust `notify`, `ignore`, `tempfile` | 변경 감시, 폴더 탐색, 테스트용 임시 폴더 | T-020 이후 |
 | Rust `trash` | 삭제한 파일을 OS 휴지통으로 보내기 | T-020 |

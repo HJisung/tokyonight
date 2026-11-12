@@ -71,11 +71,25 @@ task/T-xxx-slug ──PR──► develop ──PR──► release ──PR─�
 
 ## 검증
 
-스캐폴딩 전이라 아직 명령이 없습니다. T-004에서 아래를 실제 값으로 채웁니다.
+저장소 루트에서 한 줄로 전부 검사합니다. 하나라도 실패하면 거기서 멈추고 0이 아닌 코드로 끝납니다.
 
 ```sh
-pnpm check   # 타입 검사, 린트, 단위 테스트, cargo fmt/clippy/test (예정)
+pnpm check
 ```
+
+`pnpm check`는 아래를 순서대로 실행합니다. 일부만 다시 돌릴 때는 각 명령을 따로 씁니다.
+
+```sh
+pnpm typecheck      # tsc --noEmit
+pnpm lint           # eslint .
+pnpm format:check   # prettier --check .  (고치려면 pnpm format)
+pnpm test           # vitest run  (src/**/*.test.ts, *.test.tsx)
+pnpm check:rust     # cargo fmt --check, cargo clippy --all-targets -- -D warnings, cargo test (src-tauri)
+```
+
+- 프런트 테스트는 Vitest + Testing Library(jsdom)로 쓰고, 대상 파일 옆에 `*.test.ts(x)`로 둡니다. Rust 명령은 `@/ipc`를 `vi.mock`으로 대체합니다(예: `src/app/useAppInfo.test.ts`).
+- Rust 테스트는 같은 파일의 `#[cfg(test)] mod tests`에 둡니다(예: `src-tauri/src/app_info.rs`).
+- Prettier는 Markdown(`*.md`)을 검사하지 않습니다(`.prettierignore`).
 
 ## 코드 구조
 
@@ -84,7 +98,10 @@ T-003에서 만든 뼈대입니다. 세부 구조는 T-015에서 확정합니다
 ```
 index.html               Vite 진입 HTML (`src/app/main.tsx`를 불러옴)
 package.json             Node 24.18.0, pnpm 11.10.0 고정 (`engines`, `packageManager`, `.node-version`)
-vite.config.ts           React + Tailwind 플러그인, `@/` → `src/` 별칭, Tauri용 개발 서버(포트 1420)
+vite.config.ts           React + Tailwind 플러그인, `@/` → `src/` 별칭, Tauri용 개발 서버(포트 1420), Vitest 설정
+vitest.setup.ts          테스트마다 Testing Library 정리(`cleanup`)
+eslint.config.js         ESLint (JS·TypeScript 권장 규칙)
+.prettierignore          Prettier가 건너뛰는 경로
 tsconfig.json            strict, `@/*` 경로 별칭
 components.json          shadcn/ui 설정 (style: base-nova, 컴포넌트 경로 `src/components/ui`)
 src/
@@ -109,7 +126,7 @@ src-tauri/
 
 - 프런트엔드 import는 `@/` 별칭을 씁니다(예: `import { getAppInfo } from "@/ipc"`).
 - Rust 명령을 추가하면 `src-tauri/src/lib.rs`의 `generate_handler!`에 등록하고, `src/ipc/`에 같은 모양의 타입과 래퍼를 둡니다.
-- 실행: `pnpm install` 후 `pnpm tauri dev`(개발), `pnpm tauri build`(번들), `pnpm exec tsc --noEmit`(타입 검사).
+- 실행: `pnpm install` 후 `pnpm tauri dev`(개발), `pnpm tauri build`(번들), `pnpm check`(검증, 위 '검증' 절).
 
 ## 완료 보고 형식
 

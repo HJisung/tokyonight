@@ -1,0 +1,12 @@
+# 루트 `.gitignore`에 있는 경로(node_modules, dist 등)는 Prettier가 알아서 건너뜁니다.
+
+# 도구가 만드는 파일
+pnpm-lock.yaml
+src-tauri/target/
+src-tauri/gen/
+
+# 로컬에 설치한 외부 스킬·에이전트
+.claude/
+
+# 문서는 사람이 쓴 줄바꿈과 표 모양을 그대로 둡니다.
+*.md
