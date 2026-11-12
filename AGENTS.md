@@ -93,9 +93,13 @@ pnpm check:rust     # cargo fmt --check, cargo clippy --all-targets -- -D warnin
 
 ## 코드 구조
 
-T-003에서 만든 뼈대입니다. 세부 구조는 T-015에서 확정합니다.
+기능이 추가될 때마다 오케스트레이터가 병합 후 갱신합니다.
 
 ```
+PRODUCT.md               제품 정의(사용자, 목적, 원칙). 디자인 판단의 근거
+DESIGN.md                디자인 기준(색, 글꼴, 간격, 컴포넌트 규칙). UI 작업은 이를 따름
+docs/design/screens.md   화면별 와이어프레임과 단축키 표
+.impeccable/design.json  `impeccable` 스킬용 디자인 요약(`DESIGN.md`와 같은 내용)
 index.html               Vite 진입 HTML (`src/app/main.tsx`를 불러옴)
 package.json             Node 24.18.0, pnpm 11.10.0 고정 (`engines`, `packageManager`, `.node-version`)
 vite.config.ts           React + Tailwind 플러그인, `@/` → `src/` 별칭, Tauri용 개발 서버(포트 1420), Vitest 설정
@@ -106,26 +110,34 @@ tsconfig.json            strict, `@/*` 경로 별칭
 components.json          shadcn/ui 설정 (style: base-nova, 컴포넌트 경로 `src/components/ui`)
 src/
   app/                   진입점. `main.tsx`(렌더링), `App.tsx`(최상위 화면), `useAppInfo.ts`
-  features/              기능 폴더. 아직 비어 있음 (`<기능>/index.ts`로 내보냄)
+  features/              기능 폴더 (`<기능>/index.ts`로 내보냄)
+    shell/               앱 창의 뼈대 `AppShell`: 위쪽 탭 줄, 사이드바, 본문. `sidebar`·`tabs`·`children` props로 내용을 끼움. 테마 전환
   components/ui/         shadcn/ui 기본 컴포넌트 (`shadcn add`로 추가). 지금은 `button.tsx`
   lib/                   순수 함수. `utils.ts`(`cn`)
-  ipc/                   Rust 명령 호출 래퍼. `index.ts`가 내보낸 것만 씀. 지금은 `getAppInfo`
+  ipc/                   Rust 명령 호출 래퍼. `index.ts`가 내보낸 것만 씀. `appInfo.ts`, `fs.ts`(파일 작업과 오류 종류 `FsErrorKind`)
   styles/
     index.css            Tailwind·shadcn 스타일 import와 기본 레이어
-    theme.css            디자인 토큰(`@theme`, CSS 변수). 값은 shadcn 기본값, T-010에서 확정
+    theme.css            디자인 토큰(`@theme`, CSS 변수). 값의 근거는 `DESIGN.md`
 src-tauri/
   Cargo.toml             크레이트 `tokyonight` (lib 이름 `tokyonight_lib`)
   tauri.conf.json        앱 식별자·창 제목 `tokyonight`(임시), 번들 설정
-  capabilities/          창별 권한. `default.json`은 권한 없이 시작
+  capabilities/          창별 권한. 필요한 것만 추가
   icons/                 임시 아이콘(Tauri 기본 아이콘)
   src/
     main.rs              실행 파일 진입점 (`tokyonight_lib::run()`만 호출)
     lib.rs               Tauri Builder, 명령 등록
     app_info.rs          `get_app_info` 명령 (앱 이름·버전)
+    fs/                  파일 시스템 백엔드
+      commands.rs        Tauri 명령 `fs_*` 10개(얇게 유지)
+      ops.rs             파일 작업 로직과 테스트(Tauri에 의존하지 않음)
+      scope.rs           접근 허용 목록. 사용자가 대화상자로 고른 폴더·파일만 허용
+      error.rs           오류 종류. 프런트의 `FsErrorKind`와 같음
 ```
 
 - 프런트엔드 import는 `@/` 별칭을 씁니다(예: `import { getAppInfo } from "@/ipc"`).
 - Rust 명령을 추가하면 `src-tauri/src/lib.rs`의 `generate_handler!`에 등록하고, `src/ipc/`에 같은 모양의 타입과 래퍼를 둡니다.
+- 파일 접근은 반드시 `src/ipc/fs.ts`를 거칩니다. 경로는 대화상자 명령(`pickFolder` 등)이 돌려준 것만 허용 목록에 들어가며, 그 밖의 경로는 Rust가 거부합니다.
+- 파일 내용은 받은 문자열 그대로 저장됩니다. 줄바꿈(CRLF)과 맨 앞의 BOM(U+FEFF)이 문자열에 그대로 들어 있으므로, 화면에서 가리더라도 저장할 때는 유지해야 합니다.
 - 실행: `pnpm install` 후 `pnpm tauri dev`(개발), `pnpm tauri build`(번들), `pnpm check`(검증, 위 '검증' 절).
 
 ## 완료 보고 형식
