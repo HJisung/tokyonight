@@ -2,8 +2,6 @@
 
 사용자가 대략적인 작업을 전달하면 오케스트레이터가 목표·범위·완료 기준을 구체화하고, Herdr pane의 다른 에이전트에게 구현과 리뷰를 맡기는 방식입니다. 공통 규칙은 [`AGENTS.md`](../AGENTS.md)에 있습니다.
 
-> 이 문서의 위임 절차는 Herdr 0.9.5 도움말을 바탕으로 썼고 아직 실제로 돌려 보지 않았습니다. T-002에서 검증하고 고칩니다.
-
 ## 구조
 
 ```
@@ -76,7 +74,13 @@
 test "${HERDR_ENV:-}" = 1
 ```
 
-task마다 worktree를 만들고, 그 경로에서 구현자 pane을 열어 Claude Code를 시작합니다. pane ID는 응답 JSON의 `.result.pane.pane_id`에서 읽습니다.
+보통은 스크립트 한 줄로 합니다. worktree 생성, pane 분할, 구현자 시작, 표준 프롬프트 전송까지 합니다. task가 `ready`가 아니면 거부합니다.
+
+```sh
+scripts/delegate.sh T-xxx-slug impl-txxx "이 task에만 해당하는 추가 지시"
+```
+
+스크립트가 하는 일을 손으로 하면 아래와 같습니다. pane ID는 응답 JSON의 `.result.pane.pane_id`에서 읽습니다.
 
 ```sh
 wt=$(scripts/task-worktree.sh T-xxx-slug | tail -1)
@@ -89,10 +93,15 @@ herdr agent read impl
 리뷰어도 같은 방식으로 이름 `reviewer`로 시작합니다(`--kind codex`, Codex를 쓸 수 없으면 `--kind claude`). 이미 떠 있는 에이전트는 `herdr agent list`로 확인해 재사용합니다.
 
 - 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git` 명령은 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
+- 실제로 돌려 보며 확인한 것(2026-11-12, T-003~T-020):
+  - 오케스트레이터는 구현자 pane의 승인 창을 대신 승인할 수 없습니다. `Escape`로 취소하고 다른 방법을 지시하거나, 꼭 필요하면 사용자가 그 pane에서 직접 승인합니다.
+  - 구현자가 자주 멈추는 원인: `;`·`&&`로 묶은 셸 명령, `ls`·`cat` 같은 탐색 명령, 파일 삭제, worktree 밖 파일 읽기(링크, `~/.cargo/registry`), 화면 캡처, 빌드된 앱 직접 실행. 표준 프롬프트에 금지 사항으로 넣었습니다.
+  - pane이 작으면 승인 창이나 선택형 질문의 내용을 읽을 수 없습니다. 구현자는 동시에 두 명까지가 읽기 편하고, 끝난 pane은 바로 닫습니다.
+  - `idle`은 완료가 아닙니다. '커밋이 있고 작업 폴더가 깨끗하며 `working`이 아님'으로 완료를 판단합니다.
 - `blocked`는 에이전트가 승인이나 질문을 기다린다는 뜻입니다. 화면을 읽고, 사용자 결정이 필요한 내용이면 사용자에게 묻습니다.
 - `idle`·`done`은 완료의 증거가 아닙니다. 보고 내용과 저장소 상태로 확인합니다.
 - 구현자는 항상 자기 worktree에서 일합니다. 서로 다른 기능 폴더만 건드리는 task는 동시에 여러 구현자에게 맡길 수 있습니다.
-- worktree는 원래 체크아웃 옆의 `tokyonight-worktrees/` 아래에 생깁니다. 스크립트가 로컬에만 있는 디자인 스킬을 심볼릭 링크로 연결합니다. Rust 빌드 결과는 원래 체크아웃의 `src-tauri/target`을 모든 worktree가 함께 씁니다(스크립트가 worktree에 `.cargo/config.toml`을 만듦). 의존성을 다시 컴파일하지 않아 빠르지만, 두 worktree가 동시에 빌드하면 한쪽이 기다리고, 번들 결과물(`target/release/bundle`)은 마지막에 빌드한 쪽 것으로 덮입니다.
+- worktree는 원래 체크아웃 옆의 `tokyonight-worktrees/` 아래에 생깁니다. 스크립트가 로컬에만 있는 디자인 스킬을 worktree에 복사합니다. Rust 빌드 결과는 원래 체크아웃의 `src-tauri/target`을 모든 worktree가 함께 씁니다(스크립트가 worktree에 `.cargo/config.toml`을 만듦). 의존성을 다시 컴파일하지 않아 빠르지만, 두 worktree가 동시에 빌드하면 한쪽이 기다리고, 번들 결과물(`target/release/bundle`)은 마지막에 빌드한 쪽 것으로 덮입니다.
 
 ### 구현자 프롬프트
 
