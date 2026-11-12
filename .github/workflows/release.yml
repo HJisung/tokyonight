@@ -1,0 +1,102 @@
+name: Release
+
+# main에 병합되면 두 OS의 설치 파일을 빌드해 GitHub 릴리스 초안에 올립니다(서명 없음).
+# 검증(`pnpm check`)은 같은 푸시에서 도는 CI 워크플로가 맡습니다.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos
+            os: macos-latest
+            installers: |
+              src-tauri/target/release/bundle/dmg/*.dmg
+          - name: windows
+            os: windows-latest
+            installers: |
+              src-tauri/target/release/bundle/msi/*.msi
+              src-tauri/target/release/bundle/nsis/*.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - name: Keep LF line endings
+        run: git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup toolchain
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm tauri build
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: installers-${{ matrix.name }}
+          path: ${{ matrix.installers }}
+          if-no-files-found: error
+          retention-days: 7
+
+  draft-release:
+    name: draft release
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Download installers
+        uses: actions/download-artifact@v5.0.0
+        with:
+          pattern: installers-*
+          path: installers
+          merge-multiple: true
+
+      # 태그는 src-tauri/tauri.conf.json의 version에서 만듭니다(v0.1.0).
+      # 같은 태그의 초안이 있으면 새로 만들고, 이미 게시된 릴리스가 있으면 덮어쓰지 않고 실패합니다.
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version="$(jq -r .version src-tauri/tauri.conf.json)"
+          tag="v${version}"
+
+          mapfile -t files < <(find installers -type f | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "::error::No installers were downloaded."
+            exit 1
+          fi
+
+          if is_draft="$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null)"; then
+            if [ "$is_draft" != "true" ]; then
+              echo "::error::Release $tag is already published. Bump the version in package.json, src-tauri/Cargo.toml and src-tauri/tauri.conf.json."
+              exit 1
+            fi
+            gh release delete "$tag" --yes
+          fi
+
+          gh release create "$tag" --draft --target "$GITHUB_SHA" --title "$tag" --generate-notes "${files[@]}"

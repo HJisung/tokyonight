@@ -1,0 +1,33 @@
+name: Setup toolchain
+description: Node, pnpm, Rust stable과 캐시를 준비하고 의존성을 설치합니다. actions/checkout 뒤에 씁니다.
+
+runs:
+  using: composite
+  steps:
+    # pnpm 버전은 package.json의 packageManager를 따릅니다.
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4.1.0
+
+    - name: Install Node
+      uses: actions/setup-node@v5.0.0
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+
+    - name: Install Rust stable
+      shell: bash
+      run: |
+        rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+        rustup default stable
+
+    # PR 실행은 캐시를 읽기만 하고, develop·main 푸시에서만 저장합니다.
+    - name: Cache Rust build
+      uses: Swatinem/rust-cache@v2.8.0
+      with:
+        workspaces: src-tauri
+        shared-key: tauri
+        save-if: ${{ github.event_name == 'push' }}
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
