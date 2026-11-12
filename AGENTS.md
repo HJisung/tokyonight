@@ -21,7 +21,7 @@ Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.m
 - 사용자 데이터를 잃을 수 있는 경로(덮어쓰기, 삭제, 왕복 변환 손실)는 README의 원칙대로 조용히 진행하지 않게 만듭니다.
 - 완료를 보고하기 전에 검증 명령을 실제로 실행하고 결과를 그대로 전합니다. 실패했거나 실행하지 못했다면 그렇게 적습니다.
 - 확정된 결정은 `docs/decisions/` 또는 README에 남깁니다. README의 '아직 정하지 않은 것'을 임의로 정하지 않습니다.
-- `main`, `release`, `develop`에 직접 커밋하거나 푸시하지 않습니다. 모든 변경은 task 브랜치와 PR을 거칩니다(아래 'Git 흐름').
+- `main`, `develop`에 직접 커밋하거나 푸시하지 않습니다. 모든 변경은 task 브랜치와 PR을 거칩니다(아래 'Git 흐름').
 - 전역 설정(`~/.claude`, `~/.codex`)과 도구 설치는 사용자 승인 없이 바꾸지 않습니다.
 - `.superpowers/`는 로컬 임시 자료입니다. 커밋하지 않습니다.
 
@@ -48,11 +48,11 @@ Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.m
 ### Git 흐름
 
 ```
-task/T-xxx-slug ──PR──► develop ──PR──► release ──PR──► main
+task/T-xxx-slug ──PR──► develop ──PR──► main
 ```
 
 - `develop`: 통합 브랜치. 모든 task 브랜치는 `origin/develop`에서 갈라져 나와 `develop`으로 돌아옵니다.
-- `release`: 배포 후보. `develop`을 모아 검증합니다. `main`: 배포된 상태.
+- `main`: 배포된 상태. 배포할 때만 `develop`을 `main`으로 올립니다.
 - 구현자마다 브랜치와 worktree를 따로 씁니다. 오케스트레이터가 `scripts/task-worktree.sh T-xxx-slug`로 만들어 줍니다. 다른 구현자의 worktree나 원래 체크아웃을 건드리지 않습니다.
 - 구현자는 자기 브랜치에 커밋까지만 합니다. 검증 명령(`pnpm check`)과 빌드(`pnpm tauri build`)가 모두 통과하면 묻지 않고 커밋하고 보고합니다. 푸시, PR, 병합은 하지 않습니다. 실패하면 실패 내용을 보고합니다.
 - 오케스트레이터가 코드를 직접 읽고 검증을 다시 돌린 뒤, 통과하면 푸시하고 `gh pr create --base develop`으로 PR을 엽니다.
@@ -60,7 +60,7 @@ task/T-xxx-slug ──PR──► develop ──PR──► release ──PR─�
 - `develop`으로의 병합은 CI가 통과한 뒤 오케스트레이터가 합니다(`gh pr merge --squash --delete-branch`). 변경이 크거나 데이터 손실 위험이 있는 task는 병합 전에 리뷰어 검토를 거칩니다.
 - 사용자는 코드가 아니라 실행되는 결과물을 보고 피드백합니다. 오케스트레이터는 병합 후 무엇이 달라졌고 어떻게 실행해 볼 수 있는지 보고하고, 피드백은 새 task로 만들어 검수받습니다.
 - 병합에 성공하면 원격·로컬 task 브랜치와 worktree를 삭제합니다. 병합되지 않은 브랜치는 지우지 않습니다.
-- `develop → release`, `release → main` 병합은 사용자가 승인한 뒤에만 합니다. 강제 푸시는 하지 않습니다.
+- `develop → main` 병합은 사용자가 승인한 뒤에만 합니다. 강제 푸시는 하지 않습니다.
 
 ### 작업 단위
 

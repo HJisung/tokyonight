@@ -14,6 +14,10 @@ branch="task/$slug"
 git -C "$root" fetch --quiet origin develop
 git -C "$root" worktree add --quiet -b "$branch" "$dest" origin/develop
 
+# Share one Rust build directory across worktrees so dependencies compile once.
+mkdir -p "$dest/.cargo"
+printf '[build]\ntarget-dir = "%s"\n' "$main_checkout/src-tauri/target" > "$dest/.cargo/config.toml"
+
 # Locally installed design skills are gitignored, so link them into the worktree.
 mkdir -p "$dest/.claude/skills" "$dest/.claude/agents"
 for name in impeccable hallmark; do
