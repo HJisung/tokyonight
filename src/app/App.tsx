@@ -11,7 +11,9 @@ export function App() {
       {appInfo.status === "ready" && (
         <>
           <h1 className="text-2xl font-medium">{appInfo.info.name}</h1>
-          <p className="text-sm text-muted-foreground">v{appInfo.info.version}</p>
+          <p className="text-sm text-muted-foreground">
+            v{appInfo.info.version}
+          </p>
         </>
       )}
       {appInfo.status === "error" && (
