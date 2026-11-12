@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -14,6 +14,13 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+
+  // Vitest: 훅·컴포넌트 테스트가 DOM을 쓰므로 jsdom에서 돌립니다.
+  test: {
+    environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}"],
+    setupFiles: ["./vitest.setup.ts"],
   },
 
   // Tauri 개발에 맞춘 설정입니다.
