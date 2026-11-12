@@ -1,0 +1,28 @@
+[package]
+name = "tokyonight"
+version = "0.1.0"
+description = "Local-first notes app"
+edition = "2024"
+publish = false
+
+[lib]
+# `_lib` 접미사는 bin 이름과 겹치지 않게 하려는 것입니다(Windows에서 필요).
+# https://github.com/rust-lang/cargo/issues/8519
+name = "tokyonight_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
