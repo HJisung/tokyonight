@@ -20,14 +20,22 @@ pane_id() { python3 -I -c 'import sys, json; print(json.load(sys.stdin)["result"
 
 # Put implementers in a column to the right of the orchestrator: the first split goes right,
 # later ones stack below the newest implementer pane.
-last=$(herdr pane list --workspace "$HERDR_WORKSPACE_ID" | python3 -I -c '
+# Ask Herdr where this pane is now. The HERDR_* variables keep the IDs from when the shell
+# started, so they point at the old workspace after the pane has been moved.
+here=$(herdr pane current --current | python3 -I -c '
+import sys, json
+p = json.load(sys.stdin)["result"]["pane"]
+print(p["pane_id"], p["workspace_id"])')
+my_pane=${here% *}
+my_workspace=${here#* }
+last=$(herdr pane list --workspace "$my_workspace" | MY_PANE="$my_pane" python3 -I -c '
 import sys, json, os
-panes = [p["pane_id"] for p in json.load(sys.stdin)["result"]["panes"] if p["pane_id"] != os.environ["HERDR_PANE_ID"]]
+panes = [p["pane_id"] for p in json.load(sys.stdin)["result"]["panes"] if p["pane_id"] != os.environ["MY_PANE"]]
 print(panes[-1] if panes else "")')
 if [ -n "$last" ]; then
   pane=$(herdr pane split "$last" --direction down --cwd "$wt" --no-focus | pane_id)
 else
-  pane=$(herdr pane split --current --direction right --cwd "$wt" --no-focus | pane_id)
+  pane=$(herdr pane split "$my_pane" --direction right --cwd "$wt" --no-focus | pane_id)
 fi
 
 herdr agent start "$name" --kind claude --pane "$pane" -- --permission-mode acceptEdits >/dev/null
