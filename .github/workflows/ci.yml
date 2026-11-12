@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check-build:
+    # 브랜치 보호 규칙의 필수 검사 이름입니다: "check-build (macos)", "check-build (windows)"
+    name: check-build (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos
+            os: macos-latest
+          - name: windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      # Windows에서 CRLF로 체크아웃되면 `prettier --check`가 실패합니다.
+      - name: Keep LF line endings
+        run: git config --global core.autocrlf false
+
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup toolchain
+        uses: ./.github/actions/setup
+
+      - name: Check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm tauri build
