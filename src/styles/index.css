@@ -8,10 +8,14 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+  }
+  body {
+    /* 창 전체는 스크롤하지 않고, 스크롤은 각 영역이 맡습니다. */
+    @apply overflow-hidden bg-background text-foreground caret-primary antialiased;
+  }
+  ::selection {
+    @apply bg-selection;
   }
 }
