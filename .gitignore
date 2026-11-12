@@ -1,9 +1,16 @@
 # Local brainstorming sessions can contain temporary data and session keys.
 .superpowers/
 
+# Dependencies and build output
+node_modules/
+dist/
+*.local
+*.log
+.DS_Store
+
 
 # Third-party design skills, installed locally (see docs/harness.md for pinned versions).
-.claude/skills/impeccable/
-.claude/skills/hallmark/
+.claude/skills/impeccable
+.claude/skills/hallmark
 .claude/agents/impeccable-*.md
 .claude/settings.local.json

@@ -79,7 +79,37 @@ pnpm check   # 타입 검사, 린트, 단위 테스트, cargo fmt/clippy/test (�
 
 ## 코드 구조
 
-앱 코드가 아직 없습니다. T-003에서 채웁니다.
+T-003에서 만든 뼈대입니다. 세부 구조는 T-015에서 확정합니다.
+
+```
+index.html               Vite 진입 HTML (`src/app/main.tsx`를 불러옴)
+package.json             Node 24.18.0, pnpm 11.10.0 고정 (`engines`, `packageManager`, `.node-version`)
+vite.config.ts           React + Tailwind 플러그인, `@/` → `src/` 별칭, Tauri용 개발 서버(포트 1420)
+tsconfig.json            strict, `@/*` 경로 별칭
+components.json          shadcn/ui 설정 (style: base-nova, 컴포넌트 경로 `src/components/ui`)
+src/
+  app/                   진입점. `main.tsx`(렌더링), `App.tsx`(최상위 화면), `useAppInfo.ts`
+  features/              기능 폴더. 아직 비어 있음 (`<기능>/index.ts`로 내보냄)
+  components/ui/         shadcn/ui 기본 컴포넌트 (`shadcn add`로 추가). 지금은 `button.tsx`
+  lib/                   순수 함수. `utils.ts`(`cn`)
+  ipc/                   Rust 명령 호출 래퍼. `index.ts`가 내보낸 것만 씀. 지금은 `getAppInfo`
+  styles/
+    index.css            Tailwind·shadcn 스타일 import와 기본 레이어
+    theme.css            디자인 토큰(`@theme`, CSS 변수). 값은 shadcn 기본값, T-010에서 확정
+src-tauri/
+  Cargo.toml             크레이트 `tokyonight` (lib 이름 `tokyonight_lib`)
+  tauri.conf.json        앱 식별자·창 제목 `tokyonight`(임시), 번들 설정
+  capabilities/          창별 권한. `default.json`은 권한 없이 시작
+  icons/                 임시 아이콘(Tauri 기본 아이콘)
+  src/
+    main.rs              실행 파일 진입점 (`tokyonight_lib::run()`만 호출)
+    lib.rs               Tauri Builder, 명령 등록
+    app_info.rs          `get_app_info` 명령 (앱 이름·버전)
+```
+
+- 프런트엔드 import는 `@/` 별칭을 씁니다(예: `import { getAppInfo } from "@/ipc"`).
+- Rust 명령을 추가하면 `src-tauri/src/lib.rs`의 `generate_handler!`에 등록하고, `src/ipc/`에 같은 모양의 타입과 래퍼를 둡니다.
+- 실행: `pnpm install` 후 `pnpm tauri dev`(개발), `pnpm tauri build`(번들), `pnpm exec tsc --noEmit`(타입 검사).
 
 ## 완료 보고 형식
 
