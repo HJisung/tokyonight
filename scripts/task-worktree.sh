@@ -18,16 +18,17 @@ git -C "$root" worktree add --quiet -b "$branch" "$dest" origin/develop
 mkdir -p "$dest/.cargo"
 printf '[build]\ntarget-dir = "%s"\n' "$main_checkout/src-tauri/target" > "$dest/.cargo/config.toml"
 
-# Locally installed design skills are gitignored, so link them into the worktree.
+# Locally installed design skills are gitignored, so copy them into the worktree.
+# Copies, not symlinks: an agent reading through a link leaves its worktree and stops for approval.
 mkdir -p "$dest/.claude/skills" "$dest/.claude/agents"
 for name in impeccable hallmark; do
   if [ -d "$main_checkout/.claude/skills/$name" ] && [ ! -e "$dest/.claude/skills/$name" ]; then
-    ln -s "$main_checkout/.claude/skills/$name" "$dest/.claude/skills/$name"
+    cp -R "$main_checkout/.claude/skills/$name" "$dest/.claude/skills/$name"
   fi
 done
 for agent in "$main_checkout"/.claude/agents/impeccable-*.md; do
   [ -e "$agent" ] || continue
-  [ -e "$dest/.claude/agents/$(basename "$agent")" ] || ln -s "$agent" "$dest/.claude/agents/$(basename "$agent")"
+  [ -e "$dest/.claude/agents/$(basename "$agent")" ] || cp "$agent" "$dest/.claude/agents/$(basename "$agent")"
 done
 
 echo "$dest"
