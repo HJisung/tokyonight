@@ -14,3 +14,6 @@ dist/
 .claude/skills/hallmark
 .claude/agents/impeccable-*.md
 .claude/settings.local.json
+
+# Per-worktree cargo settings written by scripts/task-worktree.sh
+/.cargo/

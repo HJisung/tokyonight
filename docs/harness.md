@@ -24,7 +24,7 @@
 
 | 역할 | 실행 주체 | 하는 일 | 하지 않는 일 |
 | --- | --- | --- | --- |
-| 사용자 | 사람 | 방향 제시, 제품 결정, task 검수, release·main 병합과 설치 승인 | |
+| 사용자 | 사람 | 방향 제시, 제품 결정, task 검수, main 병합과 설치 승인 | |
 | 오케스트레이터 | Claude Code | task 구체화, 위임, 코드 검토와 검증, 푸시·PR·`develop` 병합, task 상태 관리 | 큰 구현을 직접 하기 |
 | 구현자 | Claude Code (Herdr pane) | task 하나 구현, 검증 명령 실행, 커밋, 보고 | 범위 밖 수정, 푸시, PR, 병합 |
 | 리뷰어 | Codex, 불가 시 별도 Claude Code (Herdr pane) | 완료 기준·diff 대조 검토 | 코드 수정 |
@@ -53,7 +53,7 @@
 5. **구현**: 구현자가 자기 worktree의 `task/T-xxx-slug` 브랜치에서 작업합니다. 검증 명령과 빌드가 통과하면 묻지 않고 커밋한 뒤 완료 보고 형식으로 보고합니다. 푸시와 PR은 하지 않습니다.
 6. **리뷰**: 리뷰어에게 task 파일과 diff를 검토시킵니다. 상태 `review`. 문제가 나오면 구현자에게 돌려보냅니다.
 7. **검증·PR**: 오케스트레이터가 diff를 직접 읽고, 검증 명령을 다시 실행하고, 완료 기준을 하나씩 확인합니다. 구현자의 보고만으로 완료 처리하지 않습니다. 통과하면 브랜치를 푸시하고 `develop` 대상 PR을 엽니다.
-8. **병합·정리·보고**: CI가 통과하면 오케스트레이터가 PR을 `develop`에 병합하고(`gh pr merge --squash --delete-branch`), worktree와 로컬 브랜치를 지우고(`git worktree remove`, `git branch -d`), 상태를 `done`으로 바꾼 뒤 사용자에게 무엇이 달라졌고 어떻게 실행해 볼 수 있는지 보고합니다. 사용자는 실행되는 결과물을 보고 피드백하고, 피드백은 새 task가 됩니다. `release`와 `main`으로 올리는 것은 사용자가 승인할 때 합니다.
+8. **병합·정리·보고**: CI가 통과하면 오케스트레이터가 PR을 `develop`에 병합하고(`gh pr merge --squash --delete-branch`), worktree와 로컬 브랜치를 지우고(`git worktree remove`, `git branch -d`), 상태를 `done`으로 바꾼 뒤 사용자에게 무엇이 달라졌고 어떻게 실행해 볼 수 있는지 보고합니다. 사용자는 실행되는 결과물을 보고 피드백하고, 피드백은 새 task가 됩니다. `main`으로 올리는 것은 배포할 때 사용자가 승인하면 합니다.
 
 진행 중에 범위나 완료 기준을 바꿔야 하면 구현자는 멈추고 보고하며, 오케스트레이터가 task를 고쳐 다시 검수를 받습니다.
 
@@ -88,11 +88,11 @@ herdr agent read impl
 
 리뷰어도 같은 방식으로 이름 `reviewer`로 시작합니다(`--kind codex`, Codex를 쓸 수 없으면 `--kind claude`). 이미 떠 있는 에이전트는 `herdr agent list`로 확인해 재사용합니다.
 
-- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git` 명령은 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`release`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
+- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git` 명령은 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
 - `blocked`는 에이전트가 승인이나 질문을 기다린다는 뜻입니다. 화면을 읽고, 사용자 결정이 필요한 내용이면 사용자에게 묻습니다.
 - `idle`·`done`은 완료의 증거가 아닙니다. 보고 내용과 저장소 상태로 확인합니다.
 - 구현자는 항상 자기 worktree에서 일합니다. 서로 다른 기능 폴더만 건드리는 task는 동시에 여러 구현자에게 맡길 수 있습니다.
-- worktree는 원래 체크아웃 옆의 `tokyonight-worktrees/` 아래에 생깁니다. 스크립트가 로컬에만 있는 디자인 스킬을 심볼릭 링크로 연결합니다. worktree마다 Rust 빌드 결과가 따로 쌓이므로 첫 빌드는 오래 걸립니다.
+- worktree는 원래 체크아웃 옆의 `tokyonight-worktrees/` 아래에 생깁니다. 스크립트가 로컬에만 있는 디자인 스킬을 심볼릭 링크로 연결합니다. Rust 빌드 결과는 원래 체크아웃의 `src-tauri/target`을 모든 worktree가 함께 씁니다(스크립트가 worktree에 `.cargo/config.toml`을 만듦). 의존성을 다시 컴파일하지 않아 빠르지만, 두 worktree가 동시에 빌드하면 한쪽이 기다리고, 번들 결과물(`target/release/bundle`)은 마지막에 빌드한 쪽 것으로 덮입니다.
 
 ### 구현자 프롬프트
 
@@ -132,7 +132,7 @@ AI가 만든 티가 나는 UI를 피하기 위해 외부 스킬 두 개를 프�
 
 ## 사용자 승인이 필요한 것
 
-- task 검수(시작 전), `develop → release`, `release → main` 병합, 릴리스. task 브랜치의 푸시·PR·`develop` 병합은 검증이 통과하면 승인 없이 진행합니다(2026-11-12 사용자 지시).
+- task 검수(시작 전), `develop → main` 병합, 릴리스. task 브랜치의 푸시·PR·`develop` 병합은 검증이 통과하면 승인 없이 진행합니다(2026-11-12 사용자 지시).
 - 도구 설치와 전역 설정 변경(`rustup`, `herdr integration install` 등).
 - README의 제품 범위와 '아직 정하지 않은 것'에 대한 결정.
 - 파일 삭제를 동반하는 정리 작업.
