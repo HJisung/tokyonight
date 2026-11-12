@@ -88,7 +88,7 @@ herdr agent read impl
 
 리뷰어도 같은 방식으로 이름 `reviewer`로 시작합니다(`--kind codex`, Codex를 쓸 수 없으면 `--kind claude`). 이미 떠 있는 에이전트는 `herdr agent list`로 확인해 재사용합니다.
 
-- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git`, 는 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`release`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
+- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git` 명령은 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`release`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
 - `blocked`는 에이전트가 승인이나 질문을 기다린다는 뜻입니다. 화면을 읽고, 사용자 결정이 필요한 내용이면 사용자에게 묻습니다.
 - `idle`·`done`은 완료의 증거가 아닙니다. 보고 내용과 저장소 상태로 확인합니다.
 - 구현자는 항상 자기 worktree에서 일합니다. 서로 다른 기능 폴더만 건드리는 task는 동시에 여러 구현자에게 맡길 수 있습니다.
