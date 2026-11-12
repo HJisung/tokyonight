@@ -78,3 +78,4 @@
 - `develop`을 병합한 뒤 `pnpm check` 직접 실행: Vitest 17개, Rust 42개 통과.
 - 확인하지 못한 것: 빌드된 앱에서의 대화상자와 실제 휴지통 동작, Windows 실행(CI에서 확인).
 - 넘긴 것: 읽은 문자열 맨 앞의 BOM 처리(T-021, T-024), 재실행 후 허용 목록 복원(T-042, T-054), 이름 변경의 경쟁 조건(MVP 이후 검토).
+- CI(Windows)에서 `create_file_refuses_to_overwrite` 실패: 같은 이름의 폴더가 있을 때 Windows는 `create_new`가 '이미 있음'이 아니라 '권한 없음'을 돌려준다. 파일 만들기 전에 존재 여부를 먼저 확인하도록 오케스트레이터가 수정.

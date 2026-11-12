@@ -198,6 +198,11 @@ fn write_new_file(target: &Path, bytes: &[u8]) -> FsResult<()> {
 /// 빈 파일을 만듭니다. 이미 있으면 덮어쓰지 않고 오류를 돌려줍니다.
 pub fn create_file(scope: &FsScope, path: &Path) -> FsResult<String> {
     let target = scope.resolve_entry(path)?;
+    // Windows는 같은 이름의 폴더가 있으면 `create_new`가 '권한 없음'으로 실패하므로,
+    // 먼저 확인해서 어느 OS에서나 '이미 있음'으로 알립니다. 경쟁 상황은 `create_new`가 막습니다.
+    if fs::symlink_metadata(&target).is_ok() {
+        return Err(FsError::already_exists(&target));
+    }
     fs::OpenOptions::new()
         .write(true)
         .create_new(true)
