@@ -1,7 +1,7 @@
 # T-002 Herdr 위임 경로 구축·스모크 테스트
 
 - 마일스톤: M0 하네스·개발 환경
-- 상태: in-progress
+- 상태: done
 - 검수: 해당 없음(규칙 도입 전 시작)
 - 의존: 없음
 - 담당: 사용자+오케스트레이터
@@ -31,3 +31,6 @@
 
 - 2026-11-12: 사용자 승인 후 `herdr integration install claude`, `codex` 적용(`integration status`에서 둘 다 current).
 - 남은 것: 구현자·리뷰어 pane 위임 스모크 테스트, 위임 스크립트 또는 skill.
+- 2026-11-12: T-003, T-004, T-005, T-010, T-020을 실제로 Herdr pane의 Claude 구현자에게 위임해 절차를 확인. 반복 절차를 `scripts/delegate.sh`로 묶고, 겪은 문제와 대처를 `docs/harness.md`에 기록.
+- 확인하지 못한 것: Codex 리뷰어 pane(사용량 소진으로 시도하지 못함), `scripts/delegate.sh` 자체의 실행(다음 위임에서 처음 사용).
+- 스킬은 링크 대신 복사하도록 `scripts/task-worktree.sh`를 수정(링크를 따라 worktree 밖을 읽으면 승인 대기로 멈춤).
