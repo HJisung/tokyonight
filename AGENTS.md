@@ -21,7 +21,7 @@ Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.m
 - 사용자 데이터를 잃을 수 있는 경로(덮어쓰기, 삭제, 왕복 변환 손실)는 README의 원칙대로 조용히 진행하지 않게 만듭니다.
 - 완료를 보고하기 전에 검증 명령을 실제로 실행하고 결과를 그대로 전합니다. 실패했거나 실행하지 못했다면 그렇게 적습니다.
 - 확정된 결정은 `docs/decisions/` 또는 README에 남깁니다. README의 '아직 정하지 않은 것'을 임의로 정하지 않습니다.
-- `main`에 직접 커밋하지 않습니다. 브랜치는 `task/T-xxx-slug`를 씁니다. 원격 푸시와 `main` 병합은 사용자 승인 후 오케스트레이터가 합니다.
+- `main`, `release`, `develop`에 직접 커밋하거나 푸시하지 않습니다. 모든 변경은 task 브랜치와 PR을 거칩니다(아래 'Git 흐름').
 - 전역 설정(`~/.claude`, `~/.codex`)과 도구 설치는 사용자 승인 없이 바꾸지 않습니다.
 - `.superpowers/`는 로컬 임시 자료입니다. 커밋하지 않습니다.
 
@@ -42,14 +42,29 @@ Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.m
 - 화면 표시와 동작을 분리합니다. 컴포넌트는 props를 받아 그리고, 파일 접근·상태 변경은 훅(`useXxx`)이나 store에 둡니다. 컴포넌트에서 Tauri `invoke`를 직접 부르지 않고 `src/ipc/`를 거칩니다.
 - props는 명시적인 타입으로 선언하고 `any`를 쓰지 않습니다.
 - 같은 UI가 두 번째로 필요해지면 `components/ui`로 올립니다. 미리 일반화하지 않습니다.
-- 색·간격·글꼴은 디자인 토큰(CSS 변수)만 씁니다. 컴포넌트에 값을 직접 적지 않습니다.
+- 스타일은 Tailwind CSS v4를 씁니다. 색·간격·글꼴은 `@theme`에 정의한 디자인 토큰만 쓰고, 임의 값(`text-[#123456]`, `p-[13px]`)을 컴포넌트에 직접 적지 않습니다.
 - 로직이 있는 훅·store·순수 함수에는 같은 폴더에 테스트(`*.test.ts`)를 둡니다.
+
+### Git 흐름
+
+```
+task/T-xxx-slug ──PR──► develop ──PR──► release ──PR──► main
+```
+
+- `develop`: 통합 브랜치. 모든 task 브랜치는 `origin/develop`에서 갈라져 나와 `develop`으로 돌아옵니다.
+- `release`: 배포 후보. `develop`을 모아 검증합니다. `main`: 배포된 상태.
+- 구현자마다 브랜치와 worktree를 따로 씁니다. 오케스트레이터가 `scripts/task-worktree.sh T-xxx-slug`로 만들어 줍니다. 다른 구현자의 worktree나 원래 체크아웃을 건드리지 않습니다.
+- 구현자는 검증 명령(`pnpm check`)과 빌드(`pnpm tauri build`)가 모두 통과하면 묻지 않고 커밋하고, `git push -u origin task/T-xxx-slug`로 푸시하고, `gh pr create --base develop`으로 PR을 엽니다. 하나라도 실패하면 푸시하지 않고 실패 내용을 보고합니다.
+- PR 제목은 `T-xxx: 요약`, 본문에는 task 파일 경로, 완료 기준별 결과, 실행한 검증 명령과 결과를 적습니다.
+- `develop`으로의 병합은 CI 통과와 리뷰어 검토가 끝난 뒤 오케스트레이터가 합니다(`gh pr merge --squash --delete-branch`). 구현자는 병합하지 않습니다.
+- 병합에 성공하면 원격·로컬 task 브랜치와 worktree를 삭제합니다. 병합되지 않은 브랜치는 지우지 않습니다.
+- `develop → release`, `release → main` 병합은 사용자가 승인한 뒤에만 합니다. 강제 푸시는 하지 않습니다.
 
 ### 작업 단위
 
 - task 하나에 브랜치 하나, 변경 범위는 가능하면 기능 폴더 하나로 제한합니다. 공용 영역(`components/ui`, `ipc`, 토큰, 설정 파일)을 바꿔야 하면 보고에 따로 적습니다.
 - 커밋은 작게, 메시지는 기존 형식(`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`)을 따릅니다.
-- 병합 전에 리뷰어 검토와 `pnpm check` 통과가 필요합니다.
+- 병합 전에 리뷰어 검토, `pnpm check` 통과, CI 통과가 필요합니다.
 - UI를 만들거나 고치는 task는 `impeccable` 또는 `hallmark` 스킬을 사용하고, 디자인 기준은 `DESIGN.md`(T-010에서 작성)를 따릅니다.
 
 ## 검증
