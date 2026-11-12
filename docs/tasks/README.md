@@ -17,13 +17,13 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 | [T-002](T-002-herdr-delegation.md) | Herdr 위임 경로 구축·스모크 테스트 | in-progress | - | 사용자+오케스트레이터 |
 | [T-003](T-003-scaffold.md) | Tauri 2 + React + TypeScript 스캐폴딩 | ready | T-001 | 구현자 |
 | [T-004](T-004-verify-gate.md) | 검증 게이트 `pnpm check` 구성 | ready | T-003 | 구현자 |
-| [T-005](T-005-ci.md) | CI/CD: macOS·Windows에서 check·빌드, 릴리스 초안 | proposed | T-004 | 구현자 |
+| [T-005](T-005-ci.md) | CI/CD: macOS·Windows에서 check·빌드, 릴리스 초안 | ready | T-004 | 구현자 |
 
 ## M1 미정 사항 결정
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-010](T-010-screen-design.md) | 화면 구성, DESIGN.md, 앱 뼈대 | proposed | T-004 | 구현자(`impeccable` 스킬 사용) |
+| [T-010](T-010-screen-design.md) | 화면 구성, DESIGN.md, 앱 뼈대 | ready | T-004 | 구현자(`impeccable` 스킬 사용) |
 | [T-011](T-011-editor-spike.md) | 편집기 라이브러리 선정 스파이크 | done | T-003 | 구현자+리뷰어 |
 | [T-012](T-012-markdown-preservation.md) | Markdown 보존 방식 결정과 왕복 테스트 코퍼스 | proposed | T-011 | 구현자+리뷰어 |
 | [T-013](T-013-state-storage.md) | 작업 상태·복구 데이터의 저장 위치와 형식 | done | - | 오케스트레이터+사용자 |
@@ -35,20 +35,20 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-020](T-020-fs-backend.md) | 파일 시스템 백엔드 | proposed | T-004 | 구현자 |
-| [T-021](T-021-document-store.md) | 문서 저장소: 단일 버퍼와 다중 뷰 | proposed | T-020 | 구현자 |
-| [T-022](T-022-start-screen.md) | 시작 화면 | proposed | T-023, T-024 | 구현자(`impeccable` 스킬 사용) |
-| [T-023](T-023-file-tree.md) | 파일 목록 사이드바 | proposed | T-020, T-021, T-010 | 구현자 |
-| [T-024](T-024-plain-text-editor.md) | 일반 텍스트 편집 (CodeMirror 6) | proposed | T-021, T-010 | 구현자 |
-| [T-025](T-025-scratch-notes.md) | 임시 메모 | proposed | T-024 | 구현자 |
-| [T-026](T-026-new-and-external-files.md) | 새 파일 만들기와 폴더 밖 파일 열기 | proposed | T-023, T-024 | 구현자 |
+| [T-020](T-020-fs-backend.md) | 파일 시스템 백엔드 | ready | T-004 | 구현자 |
+| [T-021](T-021-document-store.md) | 문서 저장소: 단일 버퍼와 다중 뷰 | ready | T-020 | 구현자 |
+| [T-022](T-022-start-screen.md) | 시작 화면 | ready | T-023, T-024 | 구현자(`impeccable` 스킬 사용) |
+| [T-023](T-023-file-tree.md) | 파일 목록 사이드바 | ready | T-020, T-021, T-010 | 구현자 |
+| [T-024](T-024-plain-text-editor.md) | 일반 텍스트 편집 (CodeMirror 6) | ready | T-021, T-010 | 구현자 |
+| [T-025](T-025-scratch-notes.md) | 임시 메모 | ready | T-024 | 구현자 |
+| [T-026](T-026-new-and-external-files.md) | 새 파일 만들기와 폴더 밖 파일 열기 | ready | T-023, T-024 | 구현자 |
 
 ## M3 Markdown 편집
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-030](T-030-markdown-wysiwyg.md) | Markdown 라이브 프리뷰 | proposed | T-024 | 구현자(`impeccable` 스킬 사용) |
-| [T-031](T-031-source-mode.md) | 원문 편집 모드 전환 | proposed | T-030 | 구현자 |
+| [T-030](T-030-markdown-wysiwyg.md) | Markdown 라이브 프리뷰 | ready | T-024 | 구현자(`impeccable` 스킬 사용) |
+| [T-031](T-031-source-mode.md) | 원문 편집 모드 전환 | ready | T-030 | 구현자 |
 | [T-032](T-032-tables.md) | 기본 표 | draft | T-030 | 구현자 |
 | [T-033](T-033-footnotes.md) | 각주 | draft | T-030 | 구현자 |
 | [T-034](T-034-roundtrip-verification.md) | 미지원 문법 보존 검증 | draft | T-031, T-032, T-033 | 리뷰어+구현자 |
@@ -57,8 +57,8 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-040](T-040-split-panes.md) | 분할 영역 | proposed | T-024, T-010 | 구현자 |
-| [T-041](T-041-workspace-tabs.md) | 워크스페이스 탭 | proposed | T-040 | 구현자 |
+| [T-040](T-040-split-panes.md) | 분할 영역 | ready | T-024, T-010 | 구현자 |
+| [T-041](T-041-workspace-tabs.md) | 워크스페이스 탭 | ready | T-040 | 구현자 |
 | [T-042](T-042-workspace-persistence.md) | 워크스페이스 상태 저장·복원 | draft | T-041, T-013 | 구현자 |
 | [T-043](T-043-drag-drop-copy.md) | 외부 파일·폴더 끌어다 놓기 | draft | T-023, T-014 | 구현자 |
 

@@ -1,8 +1,8 @@
 # T-030 Markdown 라이브 프리뷰
 
 - 마일스톤: M3 Markdown 편집 (MVP)
-- 상태: proposed
-- 검수: 대기
+- 상태: ready
+- 검수: 승인 (2026-11-12)
 - 의존: T-024
 - 담당: 구현자(`impeccable` 스킬 사용)
 
