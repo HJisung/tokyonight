@@ -24,7 +24,7 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-010](T-010-screen-design.md) | 화면 구성, DESIGN.md, 앱 뼈대 | ready | T-004 | 구현자(`impeccable` 스킬 사용) |
+| [T-010](T-010-screen-design.md) | 화면 구성, DESIGN.md, 앱 뼈대 | done | T-004 | 구현자(`impeccable` 스킬 사용) |
 | [T-011](T-011-editor-spike.md) | 편집기 라이브러리 선정 스파이크 | done | T-003 | 구현자+리뷰어 |
 | [T-012](T-012-markdown-preservation.md) | Markdown 보존 방식 결정과 왕복 테스트 코퍼스 | proposed | T-011 | 구현자+리뷰어 |
 | [T-013](T-013-state-storage.md) | 작업 상태·복구 데이터의 저장 위치와 형식 | done | - | 오케스트레이터+사용자 |
@@ -36,7 +36,7 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-020](T-020-fs-backend.md) | 파일 시스템 백엔드 | ready | T-004 | 구현자 |
+| [T-020](T-020-fs-backend.md) | 파일 시스템 백엔드 | done | T-004 | 구현자 |
 | [T-021](T-021-document-store.md) | 문서 저장소: 단일 버퍼와 다중 뷰 | ready | T-020 | 구현자 |
 | [T-022](T-022-start-screen.md) | 시작 화면 | ready | T-023, T-024 | 구현자(`impeccable` 스킬 사용) |
 | [T-023](T-023-file-tree.md) | 파일 목록 사이드바 | ready | T-020, T-021, T-010 | 구현자 |
