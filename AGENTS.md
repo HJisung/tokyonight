@@ -4,7 +4,7 @@
 
 ## 프로젝트
 
-Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.md`](README.md)가 기준입니다. 스택은 Tauri 2 + React + TypeScript, 편집기는 CodeMirror 6 라이브 프리뷰입니다(`docs/decisions/`). 지금은 MVP([`docs/tasks/MVP.md`](docs/tasks/MVP.md))를 만들고 있습니다.
+Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.md`](README.md)가 기준입니다. 스택은 Tauri 2 + React + TypeScript, UI는 Tailwind CSS v4 + shadcn/ui, 편집기는 CodeMirror 6 라이브 프리뷰입니다(`docs/decisions/`). 지금은 MVP([`docs/tasks/MVP.md`](docs/tasks/MVP.md))를 만들고 있습니다.
 
 ## 역할
 
@@ -42,7 +42,7 @@ Windows·macOS용 로컬 중심 메모 앱입니다. 제품 범위는 [`README.m
 - 화면 표시와 동작을 분리합니다. 컴포넌트는 props를 받아 그리고, 파일 접근·상태 변경은 훅(`useXxx`)이나 store에 둡니다. 컴포넌트에서 Tauri `invoke`를 직접 부르지 않고 `src/ipc/`를 거칩니다.
 - props는 명시적인 타입으로 선언하고 `any`를 쓰지 않습니다.
 - 같은 UI가 두 번째로 필요해지면 `components/ui`로 올립니다. 미리 일반화하지 않습니다.
-- 스타일은 Tailwind CSS v4를 씁니다. 색·간격·글꼴은 `@theme`에 정의한 디자인 토큰만 쓰고, 임의 값(`text-[#123456]`, `p-[13px]`)을 컴포넌트에 직접 적지 않습니다.
+- 스타일은 Tailwind CSS v4, 기본 UI 컴포넌트는 shadcn/ui를 씁니다. shadcn 컴포넌트는 `shadcn add`로 `src/components/ui/`에 추가하고, 기본 모양 그대로 쓰지 않고 `DESIGN.md`의 토큰에 맞춥니다. 그 밖의 UI·상태·유틸 라이브러리를 새로 추가하려면 보고에 이유를 적고 사용자 승인을 받습니다. 색·간격·글꼴은 `@theme`에 정의한 디자인 토큰만 쓰고, 임의 값(`text-[#123456]`, `p-[13px]`)을 컴포넌트에 직접 적지 않습니다.
 - 로직이 있는 훅·store·순수 함수에는 같은 폴더에 테스트(`*.test.ts`)를 둡니다.
 
 ### Git 흐름
