@@ -2,7 +2,8 @@
 
 TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](../harness.md)를 따릅니다.
 
-- 상태: `draft`(구체화 필요) → `ready`(위임 가능) → `in-progress` → `review` → `done`, 그리고 `blocked`.
+- 상태: `draft`(에이전트가 작성 중) → `proposed`(사용자 검수 대기) → `ready`(사용자 승인, 위임 가능) → `in-progress` → `review` → `done`, 그리고 `blocked`.
+- 사용자가 승인하지 않은 task는 시작하지 않습니다. 승인하면 task 파일의 `검수`에 날짜를 적습니다.
 - 상태의 원본은 각 task 파일입니다. 상태를 바꾸면 이 표도 함께 고칩니다.
 - M2 이후 task는 M1의 결정에 따라 달라지므로 `draft`입니다. T-015(아키텍처 설계)에서 다시 구체화합니다.
 - MVP 범위와 진행 순서는 [`MVP.md`](MVP.md)에 있습니다.
@@ -14,21 +15,21 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 | --- | --- | --- | --- | --- |
 | [T-001](T-001-dev-toolchain.md) | 개발 도구 설치·확인 | done | - | 사용자+오케스트레이터 |
 | [T-002](T-002-herdr-delegation.md) | Herdr 위임 경로 구축·스모크 테스트 | in-progress | - | 사용자+오케스트레이터 |
-| [T-003](T-003-scaffold.md) | Tauri 2 + React + TypeScript 스캐폴딩 | ready | T-001 | 구현자 |
-| [T-004](T-004-verify-gate.md) | 검증 게이트 `pnpm check` 구성 | ready | T-003 | 구현자 |
-| [T-005](T-005-ci.md) | CI: macOS·Windows에서 check와 빌드 | ready | T-004 | 구현자 |
+| [T-003](T-003-scaffold.md) | Tauri 2 + React + TypeScript 스캐폴딩 | proposed | T-001 | 구현자 |
+| [T-004](T-004-verify-gate.md) | 검증 게이트 `pnpm check` 구성 | proposed | T-003 | 구현자 |
+| [T-005](T-005-ci.md) | CI: macOS·Windows에서 check와 빌드 | proposed | T-004 | 구현자 |
 
 ## M1 미정 사항 결정
 
 | ID | 작업 | 상태 | 의존 | 담당 |
 | --- | --- | --- | --- | --- |
-| [T-010](T-010-screen-design.md) | 화면 구성 확정 | ready | - | 사용자+오케스트레이터 |
+| [T-010](T-010-screen-design.md) | 화면 구성 확정 | proposed | - | 사용자+오케스트레이터 |
 | [T-011](T-011-editor-spike.md) | 편집기 라이브러리 선정 스파이크 | done | T-003 | 구현자+리뷰어 |
-| [T-012](T-012-markdown-preservation.md) | Markdown 보존 방식 결정과 왕복 테스트 코퍼스 | ready | T-011 | 구현자+리뷰어 |
+| [T-012](T-012-markdown-preservation.md) | Markdown 보존 방식 결정과 왕복 테스트 코퍼스 | proposed | T-011 | 구현자+리뷰어 |
 | [T-013](T-013-state-storage.md) | 작업 상태·복구 데이터의 저장 위치와 형식 | done | - | 오케스트레이터+사용자 |
-| [T-014](T-014-conflict-policy.md) | 외부 변경·이름 충돌·복원의 세부 동작 | ready | T-010 | 오케스트레이터+사용자 |
-| [T-015](T-015-architecture.md) | 아키텍처 설계 | ready | T-011, T-012, T-013, T-014 | 오케스트레이터+리뷰어 |
-| [T-016](T-016-perf-test-strategy.md) | 성능 목표와 테스트 전략 | ready | T-011 | 오케스트레이터+사용자 |
+| [T-014](T-014-conflict-policy.md) | 외부 변경·이름 충돌·복원의 세부 동작 | proposed | T-010 | 오케스트레이터+사용자 |
+| [T-015](T-015-architecture.md) | 아키텍처 설계 | proposed | T-011, T-012, T-013, T-014 | 오케스트레이터+리뷰어 |
+| [T-016](T-016-perf-test-strategy.md) | 성능 목표와 테스트 전략 | proposed | T-011 | 오케스트레이터+사용자 |
 
 ## M2 파일·문서 코어
 
