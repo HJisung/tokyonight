@@ -1,7 +1,7 @@
 # T-003 Tauri 2 + React + TypeScript 스캐폴딩
 
 - 마일스톤: M0 하네스·개발 환경
-- 상태: ready
+- 상태: done
 - 검수: 승인 (2026-11-12, 스타일은 Tailwind + shadcn/ui로 변경)
 - 의존: T-001
 - 담당: 구현자
@@ -71,3 +71,11 @@
 - `components.json`의 `hooks` 별칭(`@/hooks`)에 해당하는 폴더는 구조 규칙에 없어 만들지 않았다.
 - 식별자 `tokyonight`는 역도메인 형식이 아니다. 배포 전에 정해야 한다.
 - 훅 `useAppInfo`의 테스트는 테스트 설정(T-004)이 없어 쓰지 않았다.
+
+### 2026-11-12 오케스트레이터 검증
+
+- diff를 읽고 확인: CSP는 제한적으로 설정됨(`default-src 'self'`), 창 권한은 비어 있음, 컴포넌트는 `src/ipc/`를 거쳐 Rust 명령을 부름.
+- `develop`을 병합한 뒤 다시 실행: `pnpm exec tsc --noEmit` 통과, `pnpm tauri build` 성공(app 4.03 MiB, dmg 2.11 MiB).
+- 낯선 의존성 `cn` 확인: shadcn이 관리하는 패키지(github.com/shadcn-ui/cn).
+- 확인하지 못한 것: 창에 버전이 실제로 그려진 모습. 사용자가 `pnpm tauri dev`로 확인한다.
+- 다음 task로 넘긴 것: shadcn 기본 `button.tsx`의 임의 값 클래스와 파일 이름 규칙(T-010), `style-src 'self'`와 CodeMirror의 인라인 스타일(T-024), 앱 식별자 형식(T-062), Geist 글꼴 유지 여부(T-010).

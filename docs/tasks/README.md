@@ -15,7 +15,7 @@ TokyoNight 첫 버전 로드맵입니다. 작업 방식은 [`docs/harness.md`](.
 | --- | --- | --- | --- | --- |
 | [T-001](T-001-dev-toolchain.md) | 개발 도구 설치·확인 | done | - | 사용자+오케스트레이터 |
 | [T-002](T-002-herdr-delegation.md) | Herdr 위임 경로 구축·스모크 테스트 | in-progress | - | 사용자+오케스트레이터 |
-| [T-003](T-003-scaffold.md) | Tauri 2 + React + TypeScript 스캐폴딩 | ready | T-001 | 구현자 |
+| [T-003](T-003-scaffold.md) | Tauri 2 + React + TypeScript 스캐폴딩 | done | T-001 | 구현자 |
 | [T-004](T-004-verify-gate.md) | 검증 게이트 `pnpm check` 구성 | ready | T-003 | 구현자 |
 | [T-005](T-005-ci.md) | CI/CD: macOS·Windows에서 check·빌드, 릴리스 초안 | ready | T-004 | 구현자 |
 
