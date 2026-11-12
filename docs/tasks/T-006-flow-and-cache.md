@@ -1,7 +1,7 @@
 # T-006 브랜치 단순화와 빌드 캐시 공유
 
 - 마일스톤: M0 하네스·개발 환경
-- 상태: in-progress
+- 상태: done
 - 검수: 승인 (2026-11-12)
 - 의존: T-004
 - 담당: 오케스트레이터
@@ -30,3 +30,19 @@
 
 ## 작업 기록
 
+### 2026-11-12 오케스트레이터
+
+측정(Apple Silicon, 임시 worktree 두 개, 측정 후 삭제):
+
+| 경우 | 시간 |
+| --- | --- |
+| 첫 worktree `pnpm tauri build` (캐시 없음) | 133초 |
+| 두 번째 worktree `pnpm tauri build` (캐시 공유) | 80초 |
+| 두 worktree 동시 `pnpm tauri build` | 77초, 134초. 둘 다 성공(한쪽이 기다림) |
+| `pnpm check` 첫 실행(debug 빌드 캐시 없음) | 67초 |
+| 다른 worktree에서 `pnpm check` (캐시 공유) | 13초 |
+
+- 완료 기준 '전체 재컴파일 없이 끝난다'는 충족. 의존성은 다시 컴파일하지 않는다.
+- 릴리스 빌드가 80초에서 더 줄지 않는 이유는 릴리스 설정의 LTO(`lto = true`, `codegen-units = 1`) 때문에 마지막 링크 단계가 매번 전체를 다시 처리하기 때문이다. 자주 도는 `pnpm check`는 67초에서 13초로 줄었다.
+- 주의: 번들 결과물은 공용 `target/release/bundle`에 마지막으로 빌드한 worktree의 것이 남는다.
+- 문서의 `release` 단계 제거 확인: `AGENTS.md`, `docs/harness.md`, `.claude/settings.json`에 남아 있지 않다.
