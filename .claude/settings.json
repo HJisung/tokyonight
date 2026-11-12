@@ -12,10 +12,6 @@
       "Bash(git switch *)",
       "Bash(git branch*)",
       "Bash(git fetch*)",
-      "Bash(git push -u origin task/*)",
-      "Bash(git push origin task/*)",
-      "Bash(git push)",
-      "Bash(gh pr create *)",
       "Bash(gh pr view*)",
       "Bash(gh pr checks*)",
       "Bash(gh run view*)",
@@ -27,8 +23,7 @@
       "Bash(git push -f*)",
       "Bash(git push origin main*)",
       "Bash(git push origin release*)",
-      "Bash(git push origin develop*)",
-      "Bash(gh pr merge*)"
+      "Bash(git push origin develop*)"
     ]
   }
 }

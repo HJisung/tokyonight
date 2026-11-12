@@ -54,9 +54,11 @@ task/T-xxx-slug ──PR──► develop ──PR──► release ──PR─�
 - `develop`: 통합 브랜치. 모든 task 브랜치는 `origin/develop`에서 갈라져 나와 `develop`으로 돌아옵니다.
 - `release`: 배포 후보. `develop`을 모아 검증합니다. `main`: 배포된 상태.
 - 구현자마다 브랜치와 worktree를 따로 씁니다. 오케스트레이터가 `scripts/task-worktree.sh T-xxx-slug`로 만들어 줍니다. 다른 구현자의 worktree나 원래 체크아웃을 건드리지 않습니다.
-- 구현자는 검증 명령(`pnpm check`)과 빌드(`pnpm tauri build`)가 모두 통과하면 묻지 않고 커밋하고, `git push -u origin task/T-xxx-slug`로 푸시하고, `gh pr create --base develop`으로 PR을 엽니다. 하나라도 실패하면 푸시하지 않고 실패 내용을 보고합니다.
+- 구현자는 자기 브랜치에 커밋까지만 합니다. 검증 명령(`pnpm check`)과 빌드(`pnpm tauri build`)가 모두 통과하면 묻지 않고 커밋하고 보고합니다. 푸시, PR, 병합은 하지 않습니다. 실패하면 실패 내용을 보고합니다.
+- 오케스트레이터가 코드를 직접 읽고 검증을 다시 돌린 뒤, 통과하면 푸시하고 `gh pr create --base develop`으로 PR을 엽니다.
 - PR 제목은 `T-xxx: 요약`, 본문에는 task 파일 경로, 완료 기준별 결과, 실행한 검증 명령과 결과를 적습니다.
-- `develop`으로의 병합은 CI 통과와 리뷰어 검토가 끝난 뒤 오케스트레이터가 합니다(`gh pr merge --squash --delete-branch`). 구현자는 병합하지 않습니다.
+- `develop`으로의 병합은 CI가 통과한 뒤 오케스트레이터가 합니다(`gh pr merge --squash --delete-branch`). 변경이 크거나 데이터 손실 위험이 있는 task는 병합 전에 리뷰어 검토를 거칩니다.
+- 사용자는 코드가 아니라 실행되는 결과물을 보고 피드백합니다. 오케스트레이터는 병합 후 무엇이 달라졌고 어떻게 실행해 볼 수 있는지 보고하고, 피드백은 새 task로 만들어 검수받습니다.
 - 병합에 성공하면 원격·로컬 task 브랜치와 worktree를 삭제합니다. 병합되지 않은 브랜치는 지우지 않습니다.
 - `develop → release`, `release → main` 병합은 사용자가 승인한 뒤에만 합니다. 강제 푸시는 하지 않습니다.
 

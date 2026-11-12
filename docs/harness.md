@@ -13,7 +13,7 @@
 오케스트레이터 (Claude Code, 사용자와 대화하는 pane)
   │  docs/tasks/T-xxx.md 를 구체화 (목표·범위·완료 기준)
   ├──────────────► 구현자 (Claude Code, 옆 pane)
-  │   task 파일      전용 worktree·브랜치에서 구현, 통과 시 커밋·푸시·PR
+  │   task 파일      전용 worktree·브랜치에서 구현, 통과 시 커밋
   │◄──────────────
   ├──────────────► 리뷰어 (Codex 또는 별도 Claude, 옆 pane)
   │   task + diff    읽기 전용 검토, 문제만 보고
@@ -25,8 +25,8 @@
 | 역할 | 실행 주체 | 하는 일 | 하지 않는 일 |
 | --- | --- | --- | --- |
 | 사용자 | 사람 | 방향 제시, 제품 결정, task 검수, release·main 병합과 설치 승인 | |
-| 오케스트레이터 | Claude Code | task 구체화, 위임, 결과 검증, task 상태 관리 | 큰 구현을 직접 하기 |
-| 구현자 | Claude Code (Herdr pane) | task 하나 구현, 검증 명령 실행, 보고 | 범위 밖 수정, main 커밋 |
+| 오케스트레이터 | Claude Code | task 구체화, 위임, 코드 검토와 검증, 푸시·PR·`develop` 병합, task 상태 관리 | 큰 구현을 직접 하기 |
+| 구현자 | Claude Code (Herdr pane) | task 하나 구현, 검증 명령 실행, 커밋, 보고 | 범위 밖 수정, 푸시, PR, 병합 |
 | 리뷰어 | Codex, 불가 시 별도 Claude Code (Herdr pane) | 완료 기준·diff 대조 검토 | 코드 수정 |
 
 구현과 리뷰를 서로 다른 모델에 맡기는 이유는 같은 맹점을 공유하지 않게 하기 위해서입니다.
@@ -50,10 +50,10 @@
 2. **구체화**: 오케스트레이터가 코드와 문서를 읽고 목표, 범위, 범위 밖, 완료 기준을 직접 채웁니다. 사용자의 말에서 추측한 부분은 추측이라고 표시합니다. 상태 `proposed`.
 3. **검수**: 사용자에게 task를 보여 줍니다. 무엇을 만들고 무엇을 만들지 않는지, 끝났는지를 어떻게 확인하는지, 사용자가 정해야 하는 것을 짧게 요약합니다. 사용자가 고치라고 하면 고쳐서 다시 보여 줍니다. 승인하면 `검수: 승인 (날짜)`를 적고 상태를 `ready`로 바꿉니다. **승인 없이는 다음 단계로 가지 않습니다.**
 4. **위임**: 의존 task가 `done`인지 확인하고 구현자에게 보냅니다. 상태 `in-progress`.
-5. **구현**: 구현자가 자기 worktree의 `task/T-xxx-slug` 브랜치에서 작업합니다. 검증 명령과 빌드가 통과하면 묻지 않고 커밋·푸시하고 `develop` 대상 PR을 연 뒤 완료 보고 형식으로 보고합니다.
+5. **구현**: 구현자가 자기 worktree의 `task/T-xxx-slug` 브랜치에서 작업합니다. 검증 명령과 빌드가 통과하면 묻지 않고 커밋한 뒤 완료 보고 형식으로 보고합니다. 푸시와 PR은 하지 않습니다.
 6. **리뷰**: 리뷰어에게 task 파일과 diff를 검토시킵니다. 상태 `review`. 문제가 나오면 구현자에게 돌려보냅니다.
-7. **검증**: 오케스트레이터가 검증 명령을 직접 다시 실행하고 완료 기준을 하나씩 확인합니다. 구현자의 보고만으로 완료 처리하지 않습니다.
-8. **병합·정리·보고**: CI가 통과하면 오케스트레이터가 PR을 `develop`에 병합하고(`gh pr merge --squash --delete-branch`), worktree와 로컬 브랜치를 지우고(`git worktree remove`, `git branch -d`), 상태를 `done`으로 바꾼 뒤 사용자에게 결과를 보고합니다. `release`와 `main`으로 올리는 것은 사용자가 승인할 때 합니다.
+7. **검증·PR**: 오케스트레이터가 diff를 직접 읽고, 검증 명령을 다시 실행하고, 완료 기준을 하나씩 확인합니다. 구현자의 보고만으로 완료 처리하지 않습니다. 통과하면 브랜치를 푸시하고 `develop` 대상 PR을 엽니다.
+8. **병합·정리·보고**: CI가 통과하면 오케스트레이터가 PR을 `develop`에 병합하고(`gh pr merge --squash --delete-branch`), worktree와 로컬 브랜치를 지우고(`git worktree remove`, `git branch -d`), 상태를 `done`으로 바꾼 뒤 사용자에게 무엇이 달라졌고 어떻게 실행해 볼 수 있는지 보고합니다. 사용자는 실행되는 결과물을 보고 피드백하고, 피드백은 새 task가 됩니다. `release`와 `main`으로 올리는 것은 사용자가 승인할 때 합니다.
 
 진행 중에 범위나 완료 기준을 바꿔야 하면 구현자는 멈추고 보고하며, 오케스트레이터가 task를 고쳐 다시 검수를 받습니다.
 
@@ -88,7 +88,7 @@ herdr agent read impl
 
 리뷰어도 같은 방식으로 이름 `reviewer`로 시작합니다(`--kind codex`, Codex를 쓸 수 없으면 `--kind claude`). 이미 떠 있는 에이전트는 `herdr agent list`로 확인해 재사용합니다.
 
-- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git`, task 브랜치 푸시, `gh pr create`는 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`release`·`develop` 직접 푸시, 강제 푸시, `gh pr merge`는 구현자에게 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
+- 구현자는 `-- --permission-mode acceptEdits`로 시작합니다. `pnpm`, `cargo`, 로컬 `git` 명령은 `.claude/settings.json`의 허용 목록에 있습니다. `main`·`release`·`develop` 직접 푸시와 강제 푸시는 차단되어 있습니다. 그 밖의 명령은 승인 대기로 멈춥니다.
 - `blocked`는 에이전트가 승인이나 질문을 기다린다는 뜻입니다. 화면을 읽고, 사용자 결정이 필요한 내용이면 사용자에게 묻습니다.
 - `idle`·`done`은 완료의 증거가 아닙니다. 보고 내용과 저장소 상태로 확인합니다.
 - 구현자는 항상 자기 worktree에서 일합니다. 서로 다른 기능 폴더만 건드리는 task는 동시에 여러 구현자에게 맡길 수 있습니다.
@@ -101,8 +101,7 @@ herdr agent read impl
 task: docs/tasks/T-xxx-slug.md
 지금 있는 worktree(브랜치 task/T-xxx-slug)에서 범위 안의 작업만 하세요.
 끝나면 검증 명령과 빌드를 실행하세요. 모두 통과하면 task 파일의 '작업 기록'을 채우고
-커밋, 푸시, develop 대상 PR 생성까지 하세요. 실패하면 푸시하지 말고 보고하세요.
-마지막에 AGENTS.md의 완료 보고 형식으로 PR 주소와 함께 보고하세요.
+커밋하세요. 푸시와 PR은 하지 마세요. 마지막에 AGENTS.md의 완료 보고 형식으로 보고하세요.
 결정이 필요한 것을 만나면 추측하지 말고 멈춰서 물으세요.
 ```
 
