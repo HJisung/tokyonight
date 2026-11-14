@@ -2,7 +2,19 @@
 
 로컬 파일을 중심으로 여러 문서를 한 화면에서 편집하고, 작업별로 분할 화면을 전환하는 Windows·macOS 데스크톱 메모 앱을 구상합니다. `tokyonight`는 임시 저장소 이름이며 제품명은 정해지지 않았습니다.
 
-> 현재 단계: 제품 아이디어와 첫 버전 범위를 정리하는 중입니다. 앱 구현, 기술 스택, 상세 설계 및 개발 하네스 규칙은 아직 확정되지 않았습니다.
+> 현재 단계: 첫 버전 범위의 초기 구현(v0.1)이 있습니다. 기술 스택과 잠정 설계 결정은 [docs/architecture.md](docs/architecture.md)에 있고, 아래 "아직 정하지 않은 것" 중 일부는 그 문서에서 잠정적으로 정했습니다. 개발 하네스 규칙은 아직 확정되지 않았습니다.
+
+## 실행
+
+Node 24+, Rust(stable)가 필요합니다. Homebrew의 rustup을 쓰면 `export PATH=/opt/homebrew/opt/rustup/bin:$PATH`가 필요합니다.
+
+```sh
+npm install
+npm run dev          # 개발 모드로 앱 실행
+npm run build        # 배포용 앱 번들 (src-tauri/target/release/bundle/)
+npm run typecheck && npm test && npm run test:rust
+npm run test:e2e     # 가짜 백엔드를 붙인 브라우저 자동화 테스트 (tests/e2e/README.md)
+```
 
 ## 제품 방향
 
@@ -69,7 +81,7 @@
 ## 개발 방식과 다음 단계
 
 - 사용자는 대략적인 작업을 전달하고, 에이전트가 목표·범위·완료 기준을 구체화해 Herdr 분할 pane의 다른 에이전트에게 작업을 위임하는 방식을 원합니다. Herdr 제어는 해당 세션의 접근 권한과 환경을 확인한 후 진행합니다.
-- 먼저 제품 범위와 화면 구성을 계속 확정하고, 이후 설계·기술 선택·하네스 규칙을 정리합니다. 현재 저장소에는 앱 코드가 없습니다.
+- 먼저 제품 범위와 화면 구성을 계속 확정하고, 이후 설계·기술 선택·하네스 규칙을 정리합니다. 실제 창에서의 수동 확인과 Windows 검증은 아직 하지 않았습니다.
 - 화면 시안은 로컬 `.superpowers/` 아래의 임시 브레인스토밍 자료이며 저장소에는 포함하지 않습니다. 확정된 결정은 이 문서 또는 이후 설계 문서에 남깁니다.
 
 원격 저장소: https://github.com/HJisung/tokyonight

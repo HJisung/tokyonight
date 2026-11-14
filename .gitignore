@@ -1,3 +1,12 @@
 # Local brainstorming sessions can contain temporary data and session keys.
 .superpowers/
 
+
+node_modules/
+out/
+dist/
+
+# Browser QA artifacts
+tests/e2e/screenshots/
+test-results/
+playwright-report/
